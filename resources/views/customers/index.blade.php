@@ -24,40 +24,38 @@
             </tr>
         </thead>
         <tbody>
-            @php
-                $customers = [
-                    ['id' => '021423457', 'name' => 'Alice Johnson', 'email' => 'alice@gmail.com', 'address' => 'Swan Street', 'status' => 'Active'],
-                    ['id' => '021423458', 'name' => 'Bob Smith', 'email' => 'bob@gmail.com', 'address' => 'Maple Avenue', 'status' => 'Inactive'],
-                    ['id' => '021423459', 'name' => 'Carol White', 'email' => 'carol@gmail.com', 'address' => 'Pine Road', 'status' => 'Active'],
-                    ['id' => '021423460', 'name' => 'David Brown', 'email' => 'david@gmail.com', 'address' => 'Oak Lane', 'status' => 'Active'],
-                    ['id' => '021423461', 'name' => 'Eve Davis', 'email' => 'eve@gmail.com', 'address' => 'Elm Drive', 'status' => 'Inactive'],
-                    ['id' => '021423462', 'name' => 'Frank Miller', 'email' => 'frank@gmail.com', 'address' => 'Cedar Court', 'status' => 'Active'],
-                ];
-            @endphp
             @foreach ($customers as $customer)
                 <tr class="border-b border-gray-200">
-                    <td class="px-4 py-4 text-gray-900">{{ $customer['id'] }}</td>
+                    <td class="px-4 py-4 text-gray-900">{{ $customer['customer_id'] }}</td>
                     <td class="px-4 py-4 text-gray-900">{{ $customer['name'] }}</td>
                     <td class="px-4 py-4 text-gray-900">{{ $customer['email'] }}</td>
                     <td class="px-4 py-4 text-gray-900">{{ $customer['address'] }}</td>
                     <td class="px-4 py-4">
-                        <span class="inline-flex items-center px-3 py-0.5 rounded-full font-medium {{ $customer['status'] === 'Active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
-                            {{ $customer['status'] }}
+                        <span class="inline-flex items-center px-3 py-0.5 rounded-full font-medium {{ $customer['status'] ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
+                            {{ $customer['status'] ? 'Active' : 'Inactive' }}
                         </span>
                     </td>
                     <td class="px-4 py-4 text-center" style="position: relative; overflow: visible;">
-                        <button class="flex justify-center w-full text-gray-500 hover:text-gray-700 action-toggle" data-status="{{ $customer['status'] }}">
+                        <button class="flex justify-center w-full text-gray-500 hover:text-gray-700 action-toggle">
                             <span class="iconify" data-icon="ic:baseline-menu" style="font-size: 24px;"></span>
                         </button>
-                        <div class="action-dropdown" data-id="{{ $customer['id'] }}" data-name="{{ $customer['name'] }}" data-email="{{ $customer['email'] }}" data-address="{{ $customer['address'] }}" data-status="{{ $customer['status'] }}" style="display: none; position: absolute; right: 16px; top: 100%; background: white; border: 1px solid #e5e7eb; border-radius: 16px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1); z-index: 9999; min-width: 200px; padding: 8px 0;">
-                            <div style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; cursor: pointer; font-weight: 600; color: #111827; white-space: nowrap;" onmouseenter="this.style.backgroundColor='#f3f4f6'" onmouseleave="this.style.backgroundColor='transparent'">
-                                <span class="iconify" data-icon="material-symbols:key" style="font-size: 22px;"></span>
-                                <span>Active</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; cursor: pointer; font-weight: 600; color: #111827; white-space: nowrap;" onmouseenter="this.style.backgroundColor='#f3f4f6'" onmouseleave="this.style.backgroundColor='transparent'">
-                                <span class="iconify" data-icon="material-symbols:key-off" style="font-size: 22px;"></span>
-                                <span>Deactivate</span>
-                            </div>
+                        <div class="action-dropdown" data-id="{{ $customer['id'] }}" data-customer-id="{{ $customer['customer_id'] }}" data-name="{{ $customer['name'] }}" data-email="{{ $customer['email'] }}" data-phone="{{ $customer['phone'] ?? '' }}" data-address="{{ $customer['address'] }}" data-status="{{ $customer['status'] ? 'active' : 'inactive' }}" style="display: none; position: absolute; right: 16px; top: 100%; background: white; border: 1px solid #e5e7eb; border-radius: 16px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1); z-index: 9999; min-width: 200px; padding: 8px 0;">
+                            <form action="{{ route('customers.activate', $customer['id']) }}" method="POST" style="margin:0;">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; cursor: pointer; font-weight: 600; color: #111827; white-space: nowrap; width: 100%; border: none; background: transparent;" onmouseenter="this.style.backgroundColor='#f3f4f6'" onmouseleave="this.style.backgroundColor='transparent'">
+                                    <span class="iconify" data-icon="material-symbols:key" style="font-size: 22px;"></span>
+                                    <span>Active</span>
+                                </button>
+                            </form>
+                            <form action="{{ route('customers.deactivate', $customer['id']) }}" method="POST" style="margin:0;">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; cursor: pointer; font-weight: 600; color: #111827; white-space: nowrap; width: 100%; border: none; background: transparent;" onmouseenter="this.style.backgroundColor='#f3f4f6'" onmouseleave="this.style.backgroundColor='transparent'">
+                                    <span class="iconify" data-icon="material-symbols:key-off" style="font-size: 22px;"></span>
+                                    <span>Deactivate</span>
+                                </button>
+                            </form>
                             <div onclick="openEditModal(this)" style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; cursor: pointer; font-weight: 600; color: #111827; white-space: nowrap;" onmouseenter="this.style.backgroundColor='#f3f4f6'" onmouseleave="this.style.backgroundColor='transparent'">
                                 <span class="iconify" data-icon="boxicons:edit" style="font-size: 22px;"></span>
                                 <span>Edit</span>
@@ -169,16 +167,21 @@ document.getElementById('addDataModal').addEventListener('hidden.bs.modal', func
 
 function openEditModal(el) {
     const dropdown = el.closest('.action-dropdown');
-    document.getElementById('edit_customer_id').value = dropdown.dataset.id;
+    document.getElementById('edit_customer_db_id').value = dropdown.dataset.id;
+    document.getElementById('edit_customer_id').value = dropdown.dataset.customerId;
     document.getElementById('edit_customer_name').value = dropdown.dataset.name;
     document.getElementById('edit_customer_email').value = dropdown.dataset.email;
+    document.getElementById('edit_customer_phone').value = dropdown.dataset.phone;
     document.getElementById('edit_customer_address').value = dropdown.dataset.address;
     const status = dropdown.dataset.status;
     const statusInput = document.getElementById('edit_customer_status');
-    statusInput.value = status.toLowerCase();
+    statusInput.value = status;
     const trigger = statusInput.nextElementSibling;
-    trigger.textContent = status;
+    trigger.textContent = status === 'active' ? 'Active' : 'Inactive';
     trigger.style.color = '#111827';
+
+    document.getElementById('editCustomerForm').action = '/customers/' + dropdown.dataset.id;
+
     dropdown.style.display = 'none';
     new bootstrap.Modal(document.getElementById('editDataModal')).show();
 }
@@ -186,6 +189,7 @@ function openEditModal(el) {
 function openDeleteModal(el) {
     const dropdown = el.closest('.action-dropdown');
     document.getElementById('delete_customer_name').textContent = dropdown.dataset.name;
+    document.getElementById('deleteCustomerForm').action = '/customers/' + dropdown.dataset.id;
     dropdown.style.display = 'none';
     new bootstrap.Modal(document.getElementById('deleteDataModal')).show();
 }
@@ -219,53 +223,6 @@ function attachInputListeners(modal) {
             if (err) err.remove();
         }, { once: true });
     });
-}
-
-function validateAddCustomer(btn) {
-    const modal = btn.closest('.modal');
-    const form = modal.querySelector('form');
-    clearErrors(modal);
-    let valid = true;
-
-    const inputs = form.querySelectorAll('input[type="text"], input[type="email"]');
-    const nameInput = inputs[1];
-    const emailInput = inputs[2];
-    const addressInput = inputs[3];
-    const statusInput = form.querySelector('.custom-dropdown-value');
-    const statusTrigger = form.querySelector('.custom-dropdown-trigger');
-
-    if (!nameInput.value.trim()) { showFieldError(nameInput, 'Customer Name is required'); valid = false; }
-    if (!emailInput.value.trim()) { showFieldError(emailInput, 'Email is required'); valid = false; }
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value.trim())) { showFieldError(emailInput, 'Please enter a valid email'); valid = false; }
-    if (!addressInput.value.trim()) { showFieldError(addressInput, 'Address is required'); valid = false; }
-    if (!statusInput.value) { showFieldError(statusTrigger, 'Status is required'); valid = false; }
-
-    if (!valid) { attachInputListeners(modal); return; }
-    showToast('Data added successfully', 'success');
-    bootstrap.Modal.getInstance(modal).hide();
-}
-
-function validateEditCustomer(btn) {
-    const modal = btn.closest('.modal');
-    const form = modal.querySelector('form');
-    clearErrors(modal);
-    let valid = true;
-
-    const nameInput = document.getElementById('edit_customer_name');
-    const emailInput = document.getElementById('edit_customer_email');
-    const addressInput = document.getElementById('edit_customer_address');
-    const statusInput = document.getElementById('edit_customer_status');
-    const statusTrigger = statusInput.nextElementSibling;
-
-    if (!nameInput.value.trim()) { showFieldError(nameInput, 'Customer Name is required'); valid = false; }
-    if (!emailInput.value.trim()) { showFieldError(emailInput, 'Email is required'); valid = false; }
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value.trim())) { showFieldError(emailInput, 'Please enter a valid email'); valid = false; }
-    if (!addressInput.value.trim()) { showFieldError(addressInput, 'Address is required'); valid = false; }
-    if (!statusInput.value) { showFieldError(statusTrigger, 'Status is required'); valid = false; }
-
-    if (!valid) { attachInputListeners(modal); return; }
-    showToast('Data updated successfully', 'success');
-    bootstrap.Modal.getInstance(modal).hide();
 }
 </script>
 @endpush

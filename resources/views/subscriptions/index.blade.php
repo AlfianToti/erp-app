@@ -23,33 +23,27 @@
             </tr>
         </thead>
         <tbody>
-            @php
-                $subscriptions = [
-                    ['customer' => 'Alice Johnson', 'service' => 'Service A', 'period' => '1 Jan 2026 - 1 Jan 2027', 'status' => 'Active'],
-                    ['customer' => 'Bob Smith', 'service' => 'Service B', 'period' => '15 Feb 2026 - 15 Feb 2027', 'status' => 'Trial'],
-                    ['customer' => 'Carol White', 'service' => 'Service C', 'period' => '10 Mar 2026 - 10 Mar 2027', 'status' => 'Isolir'],
-                    ['customer' => 'David Brown', 'service' => 'Service A', 'period' => '5 Apr 2026 - 5 Apr 2027', 'status' => 'Dismantle'],
-                    ['customer' => 'Eve Davis', 'service' => 'Service B', 'period' => '20 May 2026 - 20 May 2027', 'status' => 'Active'],
-                    ['customer' => 'Frank Miller', 'service' => 'Service C', 'period' => '1 Jun 2026 - 1 Jun 2027', 'status' => 'Trial'],
-                ];
-            @endphp
             @foreach ($subscriptions as $subscription)
                 <tr class="border-b border-gray-200">
-                    <td class="px-4 py-4 text-gray-900">{{ $subscription['customer'] }}</td>
-                    <td class="px-4 py-4 text-gray-900">{{ $subscription['service'] }}</td>
-                    <td class="px-4 py-4 text-gray-900">{{ $subscription['period'] }}</td>
+                    <td class="px-4 py-4 text-gray-900">{{ $subscription['customer']['name'] ?? '-' }}</td>
+                    <td class="px-4 py-4 text-gray-900">{{ $subscription['service']['name'] ?? '-' }}</td>
+                    <td class="px-4 py-4 text-gray-900">
+                        {{ \Carbon\Carbon::parse($subscription['start_date'])->format('d M Y') }} - {{ \Carbon\Carbon::parse($subscription['end_date'])->format('d M Y') }}
+                    </td>
                     <td class="px-4 py-4">
                         @php
-                            $statusClasses = match($subscription['status']) {
-                                'Active' => 'bg-green-100 text-green-700',
-                                'Trial' => 'bg-yellow-100 text-yellow-700',
-                                'Isolir' => 'bg-red-100 text-red-700',
-                                'Dismantle' => 'bg-gray-100 text-gray-700',
+                            $status = ucfirst($subscription['status']);
+                            $statusClasses = match(strtolower($subscription['status'])) {
+                                'active' => 'bg-green-100 text-green-700',
+                                'trial' => 'bg-yellow-100 text-yellow-700',
+                                'isolir' => 'bg-red-100 text-red-700',
+                                'dismantle' => 'bg-gray-100 text-gray-700',
+                                'inactive' => 'bg-red-100 text-red-700',
                                 default => 'bg-gray-100 text-gray-700',
                             };
                         @endphp
                         <span class="inline-flex items-center px-3 py-0.5 rounded-full font-medium {{ $statusClasses }}">
-                            {{ $subscription['status'] }}
+                            {{ $status }}
                         </span>
                     </td>
                     <td class="px-4 py-4 text-center" style="position: relative;">
@@ -57,26 +51,46 @@
                             <span class="iconify" data-icon="ic:baseline-menu" style="font-size: 24px;"></span>
                         </button>
                         <div class="action-dropdown" style="display: none; position: absolute; right: 16px; top: 100%; background: white; border: 1px solid #e5e7eb; border-radius: 16px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1); z-index: 9999; min-width: 260px; padding: 8px 0;">
-                            <div style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; cursor: pointer; font-weight: 600; color: #111827; white-space: nowrap;" onmouseenter="this.style.backgroundColor='#f3f4f6'" onmouseleave="this.style.backgroundColor='transparent'">
-                                <span class="iconify" data-icon="material-symbols:key" style="font-size: 22px;"></span>
-                                <span>Active</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; cursor: pointer; font-weight: 600; color: #111827; white-space: nowrap;" onmouseenter="this.style.backgroundColor='#f3f4f6'" onmouseleave="this.style.backgroundColor='transparent'">
-                                <span class="iconify" data-icon="material-symbols:key-off" style="font-size: 22px;"></span>
-                                <span>Deactivate</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; cursor: pointer; font-weight: 600; color: #111827; white-space: nowrap;" onmouseenter="this.style.backgroundColor='#f3f4f6'" onmouseleave="this.style.backgroundColor='transparent'">
-                                <span class="iconify" data-icon="material-symbols:hourglass-top" style="font-size: 22px;"></span>
-                                <span>Trial</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; cursor: pointer; font-weight: 600; color: #111827; white-space: nowrap;" onmouseenter="this.style.backgroundColor='#f3f4f6'" onmouseleave="this.style.backgroundColor='transparent'">
-                                <span class="iconify" data-icon="material-symbols:stop-circle-outline-rounded" style="font-size: 22px;"></span>
-                                <span>Isolir</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; cursor: pointer; font-weight: 600; color: #111827; white-space: nowrap;" onmouseenter="this.style.backgroundColor='#f3f4f6'" onmouseleave="this.style.backgroundColor='transparent'">
-                                <span class="iconify" data-icon="material-symbols:dangerous" style="font-size: 22px;"></span>
-                                <span>Dismantle</span>
-                            </div>
+                            <form action="{{ route('subscriptions.activate', $subscription['id']) }}" method="POST" style="margin:0;">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; cursor: pointer; font-weight: 600; color: #111827; white-space: nowrap; width: 100%; border: none; background: transparent;" onmouseenter="this.style.backgroundColor='#f3f4f6'" onmouseleave="this.style.backgroundColor='transparent'">
+                                    <span class="iconify" data-icon="material-symbols:key" style="font-size: 22px;"></span>
+                                    <span>Active</span>
+                                </button>
+                            </form>
+                            <form action="{{ route('subscriptions.deactivate', $subscription['id']) }}" method="POST" style="margin:0;">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; cursor: pointer; font-weight: 600; color: #111827; white-space: nowrap; width: 100%; border: none; background: transparent;" onmouseenter="this.style.backgroundColor='#f3f4f6'" onmouseleave="this.style.backgroundColor='transparent'">
+                                    <span class="iconify" data-icon="material-symbols:key-off" style="font-size: 22px;"></span>
+                                    <span>Deactivate</span>
+                                </button>
+                            </form>
+                            <form action="{{ route('subscriptions.trial', $subscription['id']) }}" method="POST" style="margin:0;">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; cursor: pointer; font-weight: 600; color: #111827; white-space: nowrap; width: 100%; border: none; background: transparent;" onmouseenter="this.style.backgroundColor='#f3f4f6'" onmouseleave="this.style.backgroundColor='transparent'">
+                                    <span class="iconify" data-icon="material-symbols:hourglass-top" style="font-size: 22px;"></span>
+                                    <span>Trial</span>
+                                </button>
+                            </form>
+                            <form action="{{ route('subscriptions.isolir', $subscription['id']) }}" method="POST" style="margin:0;">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; cursor: pointer; font-weight: 600; color: #111827; white-space: nowrap; width: 100%; border: none; background: transparent;" onmouseenter="this.style.backgroundColor='#f3f4f6'" onmouseleave="this.style.backgroundColor='transparent'">
+                                    <span class="iconify" data-icon="material-symbols:stop-circle-outline-rounded" style="font-size: 22px;"></span>
+                                    <span>Isolir</span>
+                                </button>
+                            </form>
+                            <form action="{{ route('subscriptions.dismantle', $subscription['id']) }}" method="POST" style="margin:0;">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; cursor: pointer; font-weight: 600; color: #111827; white-space: nowrap; width: 100%; border: none; background: transparent;" onmouseenter="this.style.backgroundColor='#f3f4f6'" onmouseleave="this.style.backgroundColor='transparent'">
+                                    <span class="iconify" data-icon="material-symbols:dangerous" style="font-size: 22px;"></span>
+                                    <span>Dismantle</span>
+                                </button>
+                            </form>
                         </div>
                     </td>
                 </tr>
@@ -239,45 +253,6 @@ function attachInputListeners(modal) {
             if (err) err.remove();
         }, { once: true });
     });
-}
-
-function parseDate(str) {
-    if (!str) return null;
-    const parts = str.split('/');
-    return new Date(parts[2], parts[1] - 1, parts[0]);
-}
-
-function validateAddSubscription(btn) {
-    const modal = btn.closest('.modal');
-    const form = modal.querySelector('form');
-    clearErrors(modal);
-    let valid = true;
-
-    const dropdowns = form.querySelectorAll('.custom-dropdown-value');
-    const customerInput = dropdowns[0];
-    const serviceInput = dropdowns[1];
-    const statusInput = dropdowns[2];
-    const customerTrigger = customerInput.nextElementSibling;
-    const serviceTrigger = serviceInput.nextElementSibling;
-    const statusTrigger = statusInput.nextElementSibling;
-
-    const startInput = document.getElementById('start_date');
-    const endInput = document.getElementById('end_date');
-
-    if (!customerInput.value) { showFieldError(customerTrigger, 'Customer is required'); valid = false; }
-    if (!serviceInput.value) { showFieldError(serviceTrigger, 'Service is required'); valid = false; }
-    if (!startInput.value.trim()) { showFieldError(startInput, 'Start Date is required'); valid = false; }
-    if (!endInput.value.trim()) { showFieldError(endInput, 'End Date is required'); valid = false; }
-    else if (startInput.value.trim()) {
-        const start = parseDate(startInput.value.trim());
-        const end = parseDate(endInput.value.trim());
-        if (start && end && end <= start) { showFieldError(endInput, 'End Date must be after Start Date'); valid = false; }
-    }
-    if (!statusInput.value) { showFieldError(statusTrigger, 'Status is required'); valid = false; }
-
-    if (!valid) { attachInputListeners(modal); return; }
-    showToast('Data added successfully', 'success');
-    bootstrap.Modal.getInstance(modal).hide();
 }
 </script>
 @endpush

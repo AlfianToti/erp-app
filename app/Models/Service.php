@@ -15,7 +15,7 @@ class Service extends Model
     {
         return [
             "status" => "boolean",
-            "price" => "decimal:2",
+            "price" => "integer",
         ];
     }
 

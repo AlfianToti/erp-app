@@ -6,14 +6,18 @@
             </div>
             <h2 class="text-2xl font-bold text-gray-900 mb-4">Delete Data</h2>
             <p class="text-gray-700 mb-6">Are you sure you want to delete <span id="delete_service_name" class="font-semibold"></span>?</p>
-            <div style="display: flex; align-items: center; justify-content: center; gap: 12px;">
-                <button type="button" data-bs-dismiss="modal" style="padding: 12px 24px; border: 1px solid #d1d5db; border-radius: 12px; background: white; color: #111827;">
-                    Cancel
-                </button>
-                <button type="button" onclick="showToast('Data deleted successfully', 'success'); bootstrap.Modal.getInstance(this.closest('.modal')).hide();" style="padding: 12px 24px; border: none; border-radius: 12px; background-color: #ef4444; color: white;">
-                    Delete
-                </button>
-            </div>
+            <form id="deleteServiceForm" action="" method="POST">
+                @csrf
+                @method('DELETE')
+                <div style="display: flex; align-items: center; justify-content: center; gap: 12px;">
+                    <button type="button" data-bs-dismiss="modal" style="padding: 12px 24px; border: 1px solid #d1d5db; border-radius: 12px; background: white; color: #111827;">
+                        Cancel
+                    </button>
+                    <button type="submit" style="padding: 12px 24px; border: none; border-radius: 12px; background-color: #ef4444; color: white;">
+                        Delete
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

@@ -22,38 +22,36 @@
             </tr>
         </thead>
         <tbody>
-            @php
-                $services = [
-                    ['name' => 'Service A', 'price' => 'Rp100,000,00', 'status' => 'Active'],
-                    ['name' => 'Service B', 'price' => 'Rp250,000,00', 'status' => 'Active'],
-                    ['name' => 'Service C', 'price' => 'Rp450,000,00', 'status' => 'Active'],
-                    ['name' => 'Service D', 'price' => 'Rp150,000,00', 'status' => 'Inactive'],
-                    ['name' => 'Service E', 'price' => 'Rp300,000,00', 'status' => 'Active'],
-                    ['name' => 'Service F', 'price' => 'Rp200,000,00', 'status' => 'Inactive'],
-                ];
-            @endphp
             @foreach ($services as $service)
                 <tr class="border-b border-gray-200">
                     <td class="px-4 py-4 text-gray-900">{{ $service['name'] }}</td>
-                    <td class="px-4 py-4 text-gray-900">{{ $service['price'] }}</td>
+                    <td class="px-4 py-4 text-gray-900">Rp{{ number_format($service['price'], 0, ',', '.') }}</td>
                     <td class="px-4 py-4">
-                        <span class="inline-flex items-center px-3 py-0.5 rounded-full font-medium {{ $service['status'] === 'Active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
-                            {{ $service['status'] }}
+                        <span class="inline-flex items-center px-3 py-0.5 rounded-full font-medium {{ $service['status'] ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
+                            {{ $service['status'] ? 'Active' : 'Inactive' }}
                         </span>
                     </td>
                     <td class="px-4 py-4 text-center" style="position: relative; overflow: visible;">
-                        <button class="flex justify-center w-full text-gray-500 hover:text-gray-700 action-toggle" data-status="{{ $service['status'] }}">
+                        <button class="flex justify-center w-full text-gray-500 hover:text-gray-700 action-toggle">
                             <span class="iconify" data-icon="ic:baseline-menu" style="font-size: 24px;"></span>
                         </button>
-                        <div class="action-dropdown" data-name="{{ $service['name'] }}" data-price="{{ $service['price'] }}" data-status="{{ $service['status'] }}" style="display: none; position: absolute; right: 16px; top: 100%; background: white; border: 1px solid #e5e7eb; border-radius: 16px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1); z-index: 9999; min-width: 200px; padding: 8px 0;">
-                            <div style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; cursor: pointer; font-weight: 600; color: #111827; white-space: nowrap;" onmouseenter="this.style.backgroundColor='#f3f4f6'" onmouseleave="this.style.backgroundColor='transparent'">
-                                <span class="iconify" data-icon="material-symbols:key" style="font-size: 22px;"></span>
-                                <span>Active</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; cursor: pointer; font-weight: 600; color: #111827; white-space: nowrap;" onmouseenter="this.style.backgroundColor='#f3f4f6'" onmouseleave="this.style.backgroundColor='transparent'">
-                                <span class="iconify" data-icon="material-symbols:key-off" style="font-size: 22px;"></span>
-                                <span>Deactivate</span>
-                            </div>
+                        <div class="action-dropdown" data-id="{{ $service['id'] }}" data-name="{{ $service['name'] }}" data-price="{{ $service['price'] }}" data-description="{{ $service['description'] ?? '' }}" data-status="{{ $service['status'] ? 'active' : 'inactive' }}" style="display: none; position: absolute; right: 16px; top: 100%; background: white; border: 1px solid #e5e7eb; border-radius: 16px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1); z-index: 9999; min-width: 200px; padding: 8px 0;">
+                            <form action="{{ route('services.activate', $service['id']) }}" method="POST" style="margin:0;">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; cursor: pointer; font-weight: 600; color: #111827; white-space: nowrap; width: 100%; border: none; background: transparent;" onmouseenter="this.style.backgroundColor='#f3f4f6'" onmouseleave="this.style.backgroundColor='transparent'">
+                                    <span class="iconify" data-icon="material-symbols:key" style="font-size: 22px;"></span>
+                                    <span>Active</span>
+                                </button>
+                            </form>
+                            <form action="{{ route('services.deactivate', $service['id']) }}" method="POST" style="margin:0;">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; cursor: pointer; font-weight: 600; color: #111827; white-space: nowrap; width: 100%; border: none; background: transparent;" onmouseenter="this.style.backgroundColor='#f3f4f6'" onmouseleave="this.style.backgroundColor='transparent'">
+                                    <span class="iconify" data-icon="material-symbols:key-off" style="font-size: 22px;"></span>
+                                    <span>Deactivate</span>
+                                </button>
+                            </form>
                             <div onclick="openEditModal(this)" style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; cursor: pointer; font-weight: 600; color: #111827; white-space: nowrap;" onmouseenter="this.style.backgroundColor='#f3f4f6'" onmouseleave="this.style.backgroundColor='transparent'">
                                 <span class="iconify" data-icon="boxicons:edit" style="font-size: 22px;"></span>
                                 <span>Edit</span>
@@ -167,13 +165,16 @@ function openEditModal(el) {
     const dropdown = el.closest('.action-dropdown');
     document.getElementById('edit_service_name').value = dropdown.dataset.name;
     document.getElementById('edit_service_price').value = dropdown.dataset.price;
-    document.getElementById('edit_service_description').value = '';
+    document.getElementById('edit_service_description').value = dropdown.dataset.description;
     const status = dropdown.dataset.status;
     const statusInput = document.getElementById('edit_service_status');
-    statusInput.value = status.toLowerCase();
+    statusInput.value = status;
     const trigger = statusInput.nextElementSibling;
-    trigger.textContent = status;
+    trigger.textContent = status === 'active' ? 'Active' : 'Inactive';
     trigger.style.color = '#111827';
+
+    document.getElementById('editServiceForm').action = '/services/' + dropdown.dataset.id;
+
     dropdown.style.display = 'none';
     new bootstrap.Modal(document.getElementById('editDataModal')).show();
 }
@@ -181,6 +182,7 @@ function openEditModal(el) {
 function openDeleteModal(el) {
     const dropdown = el.closest('.action-dropdown');
     document.getElementById('delete_service_name').textContent = dropdown.dataset.name;
+    document.getElementById('deleteServiceForm').action = '/services/' + dropdown.dataset.id;
     dropdown.style.display = 'none';
     new bootstrap.Modal(document.getElementById('deleteDataModal')).show();
 }
@@ -214,53 +216,6 @@ function attachInputListeners(modal) {
             if (err) err.remove();
         }, { once: true });
     });
-}
-
-function validateAddService(btn) {
-    const modal = btn.closest('.modal');
-    const form = modal.querySelector('form');
-    clearErrors(modal);
-    let valid = true;
-
-    const inputs = form.querySelectorAll('input[type="text"]');
-    const nameInput = inputs[0];
-    const priceInput = inputs[1];
-    const descInput = form.querySelector('textarea');
-    const statusInput = form.querySelector('.custom-dropdown-value');
-    const statusTrigger = form.querySelector('.custom-dropdown-trigger');
-
-    if (!nameInput.value.trim()) { showFieldError(nameInput, 'Service Name is required'); valid = false; }
-    if (!priceInput.value.trim()) { showFieldError(priceInput, 'Price is required'); valid = false; }
-    else if (!/^\d+$/.test(priceInput.value.trim())) { showFieldError(priceInput, 'Price must be numeric'); valid = false; }
-    if (!descInput.value.trim()) { showFieldError(descInput, 'Description is required'); valid = false; }
-    if (!statusInput.value) { showFieldError(statusTrigger, 'Status is required'); valid = false; }
-
-    if (!valid) { attachInputListeners(modal); return; }
-    showToast('Data added successfully', 'success');
-    bootstrap.Modal.getInstance(modal).hide();
-}
-
-function validateEditService(btn) {
-    const modal = btn.closest('.modal');
-    const form = modal.querySelector('form');
-    clearErrors(modal);
-    let valid = true;
-
-    const nameInput = document.getElementById('edit_service_name');
-    const priceInput = document.getElementById('edit_service_price');
-    const descInput = document.getElementById('edit_service_description');
-    const statusInput = document.getElementById('edit_service_status');
-    const statusTrigger = statusInput.nextElementSibling;
-
-    if (!nameInput.value.trim()) { showFieldError(nameInput, 'Service Name is required'); valid = false; }
-    if (!priceInput.value.trim()) { showFieldError(priceInput, 'Price is required'); valid = false; }
-    else if (!/^\d+$/.test(priceInput.value.trim())) { showFieldError(priceInput, 'Price must be numeric'); valid = false; }
-    if (!descInput.value.trim()) { showFieldError(descInput, 'Description is required'); valid = false; }
-    if (!statusInput.value) { showFieldError(statusTrigger, 'Status is required'); valid = false; }
-
-    if (!valid) { attachInputListeners(modal); return; }
-    showToast('Data updated successfully', 'success');
-    bootstrap.Modal.getInstance(modal).hide();
 }
 </script>
 @endpush

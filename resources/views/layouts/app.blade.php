@@ -113,6 +113,22 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            @if(session('toast_success'))
+                showToast("{{ session('toast_success') }}", 'success');
+            @endif
+            @if(session('toast_error'))
+                showToast("{{ session('toast_error') }}", 'error');
+            @endif
+            @if(session('open_modal'))
+                var modalEl = document.getElementById("{{ session('open_modal') }}");
+                if (modalEl) {
+                    new bootstrap.Modal(modalEl).show();
+                }
+            @endif
+        });
+    </script>
+    <script>
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
