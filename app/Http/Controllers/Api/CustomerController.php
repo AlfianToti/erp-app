@@ -19,13 +19,16 @@ class CustomerController extends Controller
 
         if ($status !== null) {
             if (!in_array($status, ["active", "inactive"], true)) {
-                return response()->json([
-                    "success" => false,
-                    "message" => "Validation failed",
-                    "errors" => [
-                        "status" => ["The selected status is invalid."],
+                return response()->json(
+                    [
+                        "success" => false,
+                        "message" => "Validation failed",
+                        "errors" => [
+                            "status" => ["The selected status is invalid."],
+                        ],
                     ],
-                ], 422);
+                    422,
+                );
             }
 
             $query->where("status", $status === "active");
@@ -43,7 +46,11 @@ class CustomerController extends Controller
     public function store(Request $request): JsonResponse
     {
         $data = $request->validate([
-            "customer_id" => ["required", "string", "unique:customers,customer_id"],
+            "customer_id" => [
+                "required",
+                "string",
+                "unique:customers,customer_id",
+            ],
             "name" => ["required", "string"],
             "email" => ["nullable", "email", "unique:customers,email"],
             "phone" => ["nullable", "string"],
@@ -55,11 +62,14 @@ class CustomerController extends Controller
 
         $customer = Customer::query()->create($data);
 
-        return response()->json([
-            "success" => true,
-            "message" => "Customer created successfully",
-            "data" => $customer,
-        ], 201);
+        return response()->json(
+            [
+                "success" => true,
+                "message" => "Customer created successfully",
+                "data" => $customer,
+            ],
+            201,
+        );
     }
 
     public function show(int $customer): JsonResponse
@@ -67,11 +77,14 @@ class CustomerController extends Controller
         $customer = Customer::query()->find($customer);
 
         if (!$customer) {
-            return response()->json([
-                "success" => false,
-                "message" => "Customer not found",
-                "errors" => [],
-            ], 404);
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "Customer not found",
+                    "errors" => [],
+                ],
+                404,
+            );
         }
 
         return response()->json([
@@ -86,17 +99,28 @@ class CustomerController extends Controller
         $customer = Customer::query()->find($customer);
 
         if (!$customer) {
-            return response()->json([
-                "success" => false,
-                "message" => "Customer not found",
-                "errors" => [],
-            ], 404);
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "Customer not found",
+                    "errors" => [],
+                ],
+                404,
+            );
         }
 
         $data = $request->validate([
-            "customer_id" => ["sometimes", "string", "unique:customers,customer_id," . $customer->id],
+            "customer_id" => [
+                "sometimes",
+                "string",
+                "unique:customers,customer_id," . $customer->id,
+            ],
             "name" => ["sometimes", "string"],
-            "email" => ["nullable", "email", "unique:customers,email," . $customer->id],
+            "email" => [
+                "nullable",
+                "email",
+                "unique:customers,email," . $customer->id,
+            ],
             "phone" => ["nullable", "string"],
             "address" => ["nullable", "string"],
             "status" => ["nullable", "boolean"],
@@ -116,19 +140,26 @@ class CustomerController extends Controller
         $customer = Customer::query()->find($customer);
 
         if (!$customer) {
-            return response()->json([
-                "success" => false,
-                "message" => "Customer not found",
-                "errors" => [],
-            ], 404);
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "Customer not found",
+                    "errors" => [],
+                ],
+                404,
+            );
         }
 
         if ($customer->subscriptions()->exists()) {
-            return response()->json([
-                "success" => false,
-                "message" => "Customer cannot be deleted because it has subscriptions",
-                "errors" => [],
-            ], 422);
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" =>
+                        "Customer cannot be deleted because it has subscriptions",
+                    "errors" => [],
+                ],
+                422,
+            );
         }
 
         $customer->delete();
@@ -145,11 +176,14 @@ class CustomerController extends Controller
         $customer = Customer::query()->find($customer);
 
         if (!$customer) {
-            return response()->json([
-                "success" => false,
-                "message" => "Customer not found",
-                "errors" => [],
-            ], 404);
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "Customer not found",
+                    "errors" => [],
+                ],
+                404,
+            );
         }
 
         $customer->update(["status" => true]);
@@ -166,11 +200,14 @@ class CustomerController extends Controller
         $customer = Customer::query()->find($customer);
 
         if (!$customer) {
-            return response()->json([
-                "success" => false,
-                "message" => "Customer not found",
-                "errors" => [],
-            ], 404);
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "Customer not found",
+                    "errors" => [],
+                ],
+                404,
+            );
         }
 
         $customer->update(["status" => false]);

@@ -18,7 +18,9 @@ class SubscriptionController extends Controller
 {
     public function index(): JsonResponse
     {
-        $subscriptions = Subscription::query()->with(["customer", "service"])->get();
+        $subscriptions = Subscription::query()
+            ->with(["customer", "service"])
+            ->get();
 
         return response()->json([
             "success" => true,
@@ -39,20 +41,28 @@ class SubscriptionController extends Controller
 
         $customer = Customer::query()->find($data["customer_id"]);
         if (!$customer || !$customer->status) {
-            return response()->json([
-                "success" => false,
-                "message" => "Customer must be active to create a subscription",
-                "errors" => [],
-            ], 422);
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" =>
+                        "Customer must be active to create a subscription",
+                    "errors" => [],
+                ],
+                422,
+            );
         }
 
         $service = Service::query()->find($data["service_id"]);
         if (!$service || !$service->status) {
-            return response()->json([
-                "success" => false,
-                "message" => "Service must be active to create a subscription",
-                "errors" => [],
-            ], 422);
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" =>
+                        "Service must be active to create a subscription",
+                    "errors" => [],
+                ],
+                422,
+            );
         }
 
         $data["status"] = $data["status"] ?? SubscriptionStatus::ACTIVE->value;
@@ -60,11 +70,14 @@ class SubscriptionController extends Controller
         $subscription = Subscription::query()->create($data);
         $subscription->load(["customer", "service"]);
 
-        return response()->json([
-            "success" => true,
-            "message" => "Subscription created successfully",
-            "data" => $subscription,
-        ], 201);
+        return response()->json(
+            [
+                "success" => true,
+                "message" => "Subscription created successfully",
+                "data" => $subscription,
+            ],
+            201,
+        );
     }
 
     public function activate(int $subscription): JsonResponse
@@ -72,19 +85,25 @@ class SubscriptionController extends Controller
         $subscription = Subscription::query()->find($subscription);
 
         if (!$subscription) {
-            return response()->json([
-                "success" => false,
-                "message" => "Subscription not found",
-                "errors" => [],
-            ], 404);
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "Subscription not found",
+                    "errors" => [],
+                ],
+                404,
+            );
         }
 
         if ($subscription->status === SubscriptionStatus::DISMANTLE) {
-            return response()->json([
-                "success" => false,
-                "message" => "Dismantled subscription cannot change status",
-                "errors" => [],
-            ], 422);
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "Dismantled subscription cannot change status",
+                    "errors" => [],
+                ],
+                422,
+            );
         }
 
         $allowed = [
@@ -94,15 +113,20 @@ class SubscriptionController extends Controller
         ];
 
         if (!in_array($subscription->status, $allowed, true)) {
-            return response()->json([
-                "success" => false,
-                "message" => "Invalid status transition to active",
-                "errors" => [],
-            ], 422);
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "Invalid status transition to active",
+                    "errors" => [],
+                ],
+                422,
+            );
         }
 
         DB::transaction(function () use ($subscription): void {
-            $subscription->update(["status" => SubscriptionStatus::ACTIVE->value]);
+            $subscription->update([
+                "status" => SubscriptionStatus::ACTIVE->value,
+            ]);
         });
 
         $subscription->load(["customer", "service"]);
@@ -119,19 +143,25 @@ class SubscriptionController extends Controller
         $subscription = Subscription::query()->find($subscription);
 
         if (!$subscription) {
-            return response()->json([
-                "success" => false,
-                "message" => "Subscription not found",
-                "errors" => [],
-            ], 404);
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "Subscription not found",
+                    "errors" => [],
+                ],
+                404,
+            );
         }
 
         if ($subscription->status === SubscriptionStatus::DISMANTLE) {
-            return response()->json([
-                "success" => false,
-                "message" => "Dismantled subscription cannot change status",
-                "errors" => [],
-            ], 422);
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "Dismantled subscription cannot change status",
+                    "errors" => [],
+                ],
+                422,
+            );
         }
 
         $allowed = [
@@ -141,15 +171,20 @@ class SubscriptionController extends Controller
         ];
 
         if (!in_array($subscription->status, $allowed, true)) {
-            return response()->json([
-                "success" => false,
-                "message" => "Invalid status transition to inactive",
-                "errors" => [],
-            ], 422);
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "Invalid status transition to inactive",
+                    "errors" => [],
+                ],
+                422,
+            );
         }
 
         DB::transaction(function () use ($subscription): void {
-            $subscription->update(["status" => SubscriptionStatus::INACTIVE->value]);
+            $subscription->update([
+                "status" => SubscriptionStatus::INACTIVE->value,
+            ]);
         });
 
         $subscription->load(["customer", "service"]);
@@ -166,19 +201,25 @@ class SubscriptionController extends Controller
         $subscription = Subscription::query()->find($subscription);
 
         if (!$subscription) {
-            return response()->json([
-                "success" => false,
-                "message" => "Subscription not found",
-                "errors" => [],
-            ], 404);
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "Subscription not found",
+                    "errors" => [],
+                ],
+                404,
+            );
         }
 
         if ($subscription->status === SubscriptionStatus::DISMANTLE) {
-            return response()->json([
-                "success" => false,
-                "message" => "Dismantled subscription cannot change status",
-                "errors" => [],
-            ], 422);
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "Dismantled subscription cannot change status",
+                    "errors" => [],
+                ],
+                422,
+            );
         }
 
         $allowed = [
@@ -188,15 +229,20 @@ class SubscriptionController extends Controller
         ];
 
         if (!in_array($subscription->status, $allowed, true)) {
-            return response()->json([
-                "success" => false,
-                "message" => "Invalid status transition to trial",
-                "errors" => [],
-            ], 422);
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "Invalid status transition to trial",
+                    "errors" => [],
+                ],
+                422,
+            );
         }
 
         DB::transaction(function () use ($subscription): void {
-            $subscription->update(["status" => SubscriptionStatus::TRIAL->value]);
+            $subscription->update([
+                "status" => SubscriptionStatus::TRIAL->value,
+            ]);
         });
 
         $subscription->load(["customer", "service"]);
@@ -213,31 +259,42 @@ class SubscriptionController extends Controller
         $subscription = Subscription::query()->find($subscription);
 
         if (!$subscription) {
-            return response()->json([
-                "success" => false,
-                "message" => "Subscription not found",
-                "errors" => [],
-            ], 404);
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "Subscription not found",
+                    "errors" => [],
+                ],
+                404,
+            );
         }
 
         if ($subscription->status === SubscriptionStatus::DISMANTLE) {
-            return response()->json([
-                "success" => false,
-                "message" => "Dismantled subscription cannot change status",
-                "errors" => [],
-            ], 422);
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "Dismantled subscription cannot change status",
+                    "errors" => [],
+                ],
+                422,
+            );
         }
 
         if ($subscription->status !== SubscriptionStatus::ACTIVE) {
-            return response()->json([
-                "success" => false,
-                "message" => "Invalid status transition to isolir",
-                "errors" => [],
-            ], 422);
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "Invalid status transition to isolir",
+                    "errors" => [],
+                ],
+                422,
+            );
         }
 
         DB::transaction(function () use ($subscription): void {
-            $subscription->update(["status" => SubscriptionStatus::ISOLIR->value]);
+            $subscription->update([
+                "status" => SubscriptionStatus::ISOLIR->value,
+            ]);
         });
 
         $subscription->load(["customer", "service"]);
@@ -254,23 +311,31 @@ class SubscriptionController extends Controller
         $subscription = Subscription::query()->find($subscription);
 
         if (!$subscription) {
-            return response()->json([
-                "success" => false,
-                "message" => "Subscription not found",
-                "errors" => [],
-            ], 404);
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "Subscription not found",
+                    "errors" => [],
+                ],
+                404,
+            );
         }
 
         if ($subscription->status === SubscriptionStatus::DISMANTLE) {
-            return response()->json([
-                "success" => false,
-                "message" => "Dismantled subscription cannot change status",
-                "errors" => [],
-            ], 422);
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "Dismantled subscription cannot change status",
+                    "errors" => [],
+                ],
+                422,
+            );
         }
 
         DB::transaction(function () use ($subscription): void {
-            $subscription->update(["status" => SubscriptionStatus::DISMANTLE->value]);
+            $subscription->update([
+                "status" => SubscriptionStatus::DISMANTLE->value,
+            ]);
         });
 
         $subscription->load(["customer", "service"]);

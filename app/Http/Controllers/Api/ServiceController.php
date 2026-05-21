@@ -19,13 +19,16 @@ class ServiceController extends Controller
 
         if ($status !== null) {
             if (!in_array($status, ["active", "inactive"], true)) {
-                return response()->json([
-                    "success" => false,
-                    "message" => "Validation failed",
-                    "errors" => [
-                        "status" => ["The selected status is invalid."],
+                return response()->json(
+                    [
+                        "success" => false,
+                        "message" => "Validation failed",
+                        "errors" => [
+                            "status" => ["The selected status is invalid."],
+                        ],
                     ],
-                ], 422);
+                    422,
+                );
             }
 
             $query->where("status", $status === "active");
@@ -53,11 +56,14 @@ class ServiceController extends Controller
 
         $service = Service::query()->create($data);
 
-        return response()->json([
-            "success" => true,
-            "message" => "Service created successfully",
-            "data" => $service,
-        ], 201);
+        return response()->json(
+            [
+                "success" => true,
+                "message" => "Service created successfully",
+                "data" => $service,
+            ],
+            201,
+        );
     }
 
     public function show(int $service): JsonResponse
@@ -65,11 +71,14 @@ class ServiceController extends Controller
         $service = Service::query()->find($service);
 
         if (!$service) {
-            return response()->json([
-                "success" => false,
-                "message" => "Service not found",
-                "errors" => [],
-            ], 404);
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "Service not found",
+                    "errors" => [],
+                ],
+                404,
+            );
         }
 
         return response()->json([
@@ -84,11 +93,14 @@ class ServiceController extends Controller
         $service = Service::query()->find($service);
 
         if (!$service) {
-            return response()->json([
-                "success" => false,
-                "message" => "Service not found",
-                "errors" => [],
-            ], 404);
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "Service not found",
+                    "errors" => [],
+                ],
+                404,
+            );
         }
 
         $data = $request->validate([
@@ -112,19 +124,26 @@ class ServiceController extends Controller
         $service = Service::query()->find($service);
 
         if (!$service) {
-            return response()->json([
-                "success" => false,
-                "message" => "Service not found",
-                "errors" => [],
-            ], 404);
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "Service not found",
+                    "errors" => [],
+                ],
+                404,
+            );
         }
 
         if ($service->subscriptions()->exists()) {
-            return response()->json([
-                "success" => false,
-                "message" => "Service cannot be deleted because it has subscriptions",
-                "errors" => [],
-            ], 422);
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" =>
+                        "Service cannot be deleted because it has subscriptions",
+                    "errors" => [],
+                ],
+                422,
+            );
         }
 
         $service->delete();
@@ -141,11 +160,14 @@ class ServiceController extends Controller
         $service = Service::query()->find($service);
 
         if (!$service) {
-            return response()->json([
-                "success" => false,
-                "message" => "Service not found",
-                "errors" => [],
-            ], 404);
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "Service not found",
+                    "errors" => [],
+                ],
+                404,
+            );
         }
 
         $service->update(["status" => true]);
@@ -162,11 +184,14 @@ class ServiceController extends Controller
         $service = Service::query()->find($service);
 
         if (!$service) {
-            return response()->json([
-                "success" => false,
-                "message" => "Service not found",
-                "errors" => [],
-            ], 404);
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "Service not found",
+                    "errors" => [],
+                ],
+                404,
+            );
         }
 
         $service->update(["status" => false]);
