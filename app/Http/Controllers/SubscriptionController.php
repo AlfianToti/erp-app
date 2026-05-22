@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\Http;
 
 class SubscriptionController extends Controller
 {
-    private string $apiUrl = "http://127.0.0.1:8001/api/subscriptions";
-    private string $customersApiUrl = "http://127.0.0.1:8001/api/customers";
-    private string $servicesApiUrl = "http://127.0.0.1:8001/api/services";
+    private string $apiUrl = "http://127.0.0.1:8001/api/subscription";
+    private string $customersApiUrl = "http://127.0.0.1:8001/api/customer";
+    private string $servicesApiUrl = "http://127.0.0.1:8001/api/service";
 
     public function index(): View
     {
