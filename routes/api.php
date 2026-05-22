@@ -18,14 +18,14 @@ Route::name("api.")->group(function () {
         "deactivate",
     ]);
 
-    Route::apiResource("services", ServiceController::class);
+    Route::apiResource("service", ServiceController::class);
 
-    Route::patch("services/{service}/activate", [
+    Route::patch("service/{service}/activate", [
         ServiceController::class,
         "activate",
     ]);
 
-    Route::patch("services/{service}/deactivate", [
+    Route::patch("service/{service}/deactivate", [
         ServiceController::class,
         "deactivate",
     ]);
