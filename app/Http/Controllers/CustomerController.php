@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Http;
 
 class CustomerController extends Controller
 {
-    private string $apiUrl = "http://127.0.0.1:8001/api/customers";
+    private string $apiUrl = "http://127.0.0.1:8001/api/customer";
 
     public function index(Request $request): View
     {
