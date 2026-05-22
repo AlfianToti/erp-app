@@ -30,33 +30,33 @@ Route::name("api.")->group(function () {
         "deactivate",
     ]);
 
-    // Route::apiResource("subscriptions", SubscriptionController::class)->only([
-    //     "index",
-    //     "store",
-    // ]);
+    Route::apiResource("subscriptions", SubscriptionController::class)->only([
+        "index",
+        "store",
+    ]);
 
-    // Route::patch("subscriptions/{subscription}/activate", [
-    //     SubscriptionController::class,
-    //     "activate",
-    // ]);
+    Route::patch("subscriptions/{subscription}/activate", [
+        SubscriptionController::class,
+        "activate",
+    ]);
 
-    // Route::patch("subscriptions/{subscription}/deactivate", [
-    //     SubscriptionController::class,
-    //     "deactivate",
-    // ]);
+    Route::patch("subscriptions/{subscription}/deactivate", [
+        SubscriptionController::class,
+        "deactivate",
+    ]);
 
-    // Route::patch("subscriptions/{subscription}/trial", [
-    //     SubscriptionController::class,
-    //     "trial",
-    // ]);
+    Route::patch("subscriptions/{subscription}/trial", [
+        SubscriptionController::class,
+        "trial",
+    ]);
 
-    // Route::patch("subscriptions/{subscription}/isolir", [
-    //     SubscriptionController::class,
-    //     "isolir",
-    // ]);
+    Route::patch("subscriptions/{subscription}/isolir", [
+        SubscriptionController::class,
+        "isolir",
+    ]);
 
-    // Route::patch("subscriptions/{subscription}/dismantle", [
-    //     SubscriptionController::class,
-    //     "dismantle",
-    // ]);
+    Route::patch("subscriptions/{subscription}/dismantle", [
+        SubscriptionController::class,
+        "dismantle",
+    ]);
 });
