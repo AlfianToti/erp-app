@@ -30,32 +30,32 @@ Route::name("api.")->group(function () {
         "deactivate",
     ]);
 
-    Route::apiResource("subscriptions", SubscriptionController::class)->only([
+    Route::apiResource("subscription", SubscriptionController::class)->only([
         "index",
         "store",
     ]);
 
-    Route::patch("subscriptions/{subscription}/activate", [
+    Route::patch("subscription/{subscription}/activate", [
         SubscriptionController::class,
         "activate",
     ]);
 
-    Route::patch("subscriptions/{subscription}/deactivate", [
+    Route::patch("subscription/{subscription}/deactivate", [
         SubscriptionController::class,
         "deactivate",
     ]);
 
-    Route::patch("subscriptions/{subscription}/trial", [
+    Route::patch("subscription/{subscription}/trial", [
         SubscriptionController::class,
         "trial",
     ]);
 
-    Route::patch("subscriptions/{subscription}/isolir", [
+    Route::patch("subscription/{subscription}/isolir", [
         SubscriptionController::class,
         "isolir",
     ]);
 
-    Route::patch("subscriptions/{subscription}/dismantle", [
+    Route::patch("subscription/{subscription}/dismantle", [
         SubscriptionController::class,
         "dismantle",
     ]);
